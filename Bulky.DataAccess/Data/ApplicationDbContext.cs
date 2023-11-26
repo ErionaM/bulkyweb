@@ -10,8 +10,7 @@ namespace Bulky.DataAccess.Data
 		{
 
 		}
-		//to add table in database, first have to add that to application DB Context
-		// public DbSet<Type> NameOfTable 
+		// public DbSet<Type> NameOfTables
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<Product> Products { get; set; }
 
