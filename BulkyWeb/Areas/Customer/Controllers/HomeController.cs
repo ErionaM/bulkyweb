@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulkyWeb.Areas.Customer.Controllers
@@ -27,9 +29,31 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 		public IActionResult Details(int productId)
 		{
-			Product product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == productId, includeProperties: "Category");
-			return View(product);
+			ShoppingCart cart = new()
+			{
+				Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == productId, includeProperties: "Category"),
+				Count = 1,
+				ProductId = productId
+			};
+			return View(cart);
 		}
+
+		[HttpPost]
+		[Authorize] // the user have to logged into the website, if he want to post
+		public IActionResult Details(ShoppingCart shoppingCart)
+		{
+			//Get the userID of the logged user
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+			shoppingCart.ApplicationUserId = userId;
+
+
+			_unitOfWork.ShoppingCart.Add(shoppingCart);
+			_unitOfWork.Save();
+
+			return View();
+		}
+
 		public IActionResult Privacy()
         {
             return View();
