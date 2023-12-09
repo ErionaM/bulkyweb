@@ -17,18 +17,19 @@ namespace Bulky.Models
 		public int ProductId { get; set; } //will be a foreign key to the product table
 		[ForeignKey("ProductId")]
 		[ValidateNever]
-		public Product Product { get; set; }
+		public Product? Product { get; set; }
 
 
 		[Range(1,1000,ErrorMessage ="Please enter a value between 1 and 1000")]
 		public int Count { get; set; }
 
 
-		public string ApplicationUserId { get; set; }// will be a foreign key of application user table
+		public string? ApplicationUserId { get; set; }// will be a foreign key of application user table
 		[ForeignKey("ApplicationUserId")]
-		public ApplicationUser ApplicationUser { get; set; }
+		public ApplicationUser? ApplicationUser { get; set; }
 
 
-
+		[NotMapped] // don't add to the database
+		public double Price { get; set; }
 	}
 }

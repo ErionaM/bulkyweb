@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Bulky.Models;
 
-namespace Bulky.DataAccess.Repository.IRepository
+namespace Bulky.DataAccess.Repository.IRepository 
 {
-	public interface IProductRepository : IRepository<Product>
+	public interface IOrderHeaderRepository : IRepository<OrderHeader>
 	{
+		void Update(OrderHeader obj);
 
-		
-		void Update(Product obj);
 	}
 }
