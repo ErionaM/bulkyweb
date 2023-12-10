@@ -24,38 +24,49 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 		public IActionResult Index()
 		{
+			List<ProductApiVM> productApis = new List<ProductApiVM>();
 			IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
 
-
-			foreach (var book in productList)
+			foreach (var product in productList)
 			{
-				string searchBookUrl = string.Format(BOOKS_URL_API, book.Title);
-				Uri baseUrl = new Uri(searchBookUrl);
-				RestClient client = new RestClient(baseUrl);
-				var request = new RestRequest("", Method.Get);
-				var response = client.Execute<BookListResponseVM>(request);
-
-				if (response.IsSuccessful)
+				productApis.Add(new ProductApiVM
 				{
-					Console.WriteLine(response.Content);
-
-					var bookListResponse = response.Data;
-
-					if (bookListResponse!.NumFound > 0)
-					{
-						var ratingAverage = bookListResponse.Docs
-							.FirstOrDefault()!.Ratings_average;
-					}
-				}
-				else
-				{
-					Console.WriteLine($"Error: {response.StatusCode} - {response.ErrorMessage}");
-				}
+					Product = product,
+					RatingAverage = GetRatingAverage(product.Title!)
+				});
 			}
 
-			return View(productList);
+			return View(productApis);
 		}
 
+		private double GetRatingAverage(string productTitle)
+		{
+			double ratingAverage = 0;
+			string searchBookUrl = string.Format(BOOKS_URL_API, productTitle);
+			Uri baseUrl = new Uri(searchBookUrl);
+			RestClient client = new RestClient(baseUrl);
+			var request = new RestRequest("", Method.Get);
+			var response = client.Execute<BookListResponseVM>(request);
+
+			if (response.IsSuccessful)
+			{
+				Console.WriteLine(response.Content);
+
+				var bookListResponse = response.Data;
+
+				if (bookListResponse!.NumFound > 0)
+				{
+					ratingAverage = bookListResponse.Docs
+						.FirstOrDefault()!.Ratings_average;
+				}
+			}
+			else
+			{
+				Console.WriteLine($"Error: {response.StatusCode} - {response.ErrorMessage}");
+			}
+
+			return ratingAverage;
+		}
 
 		public IActionResult Details(int productId)
 		{
