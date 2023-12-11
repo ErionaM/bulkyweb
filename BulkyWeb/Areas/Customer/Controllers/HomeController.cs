@@ -70,13 +70,16 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 		public IActionResult Details(int productId)
 		{
-			ShoppingCart cart = new()
+			ShoppingCart cartObj = new()
 			{
-				Product = _unitOfWork.Product.GetAll(includeProperties: "Category").FirstOrDefault(),
+				//Product = _unitOfWork.Product.GetAll(includeProperties: "Category").FirstOrDefault(),
+				//Count = 1,
+				//Id = productId,
 				Count = 1,
 				ProductId = productId,
+				Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == productId, includeProperties:"Category,CoverType"),
 			};
-			return View(cart);
+			return View(cartObj);
 		}
 
 		[HttpPost]
