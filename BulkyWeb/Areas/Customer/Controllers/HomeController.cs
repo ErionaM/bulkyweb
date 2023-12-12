@@ -44,8 +44,10 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			double ratingAverage = 0;
 			string searchBookUrl = string.Format(BOOKS_URL_API, productTitle);
 			Uri baseUrl = new Uri(searchBookUrl);
+
 			RestClient client = new RestClient(baseUrl);
 			var request = new RestRequest("", Method.Get);
+
 			var response = client.Execute<BookListResponseVM>(request);
 
 			if (response.IsSuccessful)
@@ -72,12 +74,11 @@ namespace BulkyWeb.Areas.Customer.Controllers
 		{
 			ShoppingCart cartObj = new()
 			{
-				//Product = _unitOfWork.Product.GetAll(includeProperties: "Category").FirstOrDefault(),
-				//Count = 1,
-				//Id = productId,
+				Product = _unitOfWork.Product
+									.GetAll(includeProperties: "Category")
+									.FirstOrDefault(p => p.Id == productId),
 				Count = 1,
-				ProductId = productId,
-				Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == productId, includeProperties:"Category,CoverType"),
+				ProductId = productId
 			};
 			return View(cartObj);
 		}
