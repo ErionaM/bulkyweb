@@ -4,9 +4,11 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>f41ed192-691b-49bf-8cf8-6925cf0f42ca</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.12" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.12" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
