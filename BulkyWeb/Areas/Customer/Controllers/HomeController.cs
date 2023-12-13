@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
 using Bulky.Models.ViewModels;
+using Bulky.Utillity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
@@ -24,6 +25,15 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 		public IActionResult Index()
 		{
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+			if (userId != null)
+			{
+				HttpContext.Session.SetInt32(SD.SessionCart,
+					_unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId.Value).Count());
+			}
+
+
 			List<ProductApiVM> productApis = new List<ProductApiVM>();
 			IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
 
@@ -84,10 +94,10 @@ namespace BulkyWeb.Areas.Customer.Controllers
 		}
 
 		[HttpPost]
-		[Authorize] // the user have to logged into the website, if he want to post
+		[Authorize] 
 		public IActionResult Details(ShoppingCart shoppingCart)
 		{
-			//Get the userID of the logged user
+			//Get the userID of the user
 			var claimsIdentity = (ClaimsIdentity)User.Identity;
 			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 			shoppingCart.ApplicationUserId = userId;
@@ -100,16 +110,21 @@ namespace BulkyWeb.Areas.Customer.Controllers
 				//shopping cart exist
 				cartFromDb.Count += shoppingCart.Count;
 				_unitOfWork.ShoppingCart.Update(cartFromDb);
+				_unitOfWork.Save();
 			}
 			else
 			{
 				//add cart record
 				_unitOfWork.ShoppingCart.Add(shoppingCart);
+				_unitOfWork.Save();
 
+				//method setint32 is used to store an integer value in the session
+				HttpContext.Session.SetInt32(SD.SessionCart,
+					_unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
 
 			}
 			TempData["success"] = "Cart updated successfully";
-			_unitOfWork.Save();
+			
 
 
 
