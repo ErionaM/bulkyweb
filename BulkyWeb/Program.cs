@@ -48,7 +48,8 @@ builder.Services.AddSession(options =>
 
 
 
-builder.Services.AddRazorPages();//To tell our application in services we will register add razor pages
+builder.Services.AddRazorPages()
+	.AddRazorRuntimeCompilation();//To tell our application in services we will register add razor pages
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 

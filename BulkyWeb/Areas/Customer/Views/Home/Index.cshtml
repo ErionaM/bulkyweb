@@ -1,7 +1,17 @@
-﻿@model List<ProductApiVM>
+﻿@* @model List<ProductApiVM> *@
+@model PaginationVM<ProductApiVM>
+
+@{
+	int itemsPerPage = Model.PageSize;
+	int totalPages = (int)Math.Ceiling((double)Model.TotalItems / itemsPerPage);
+	int pageIndex = Model.PageIndex + 1;
+	List<int> numberOfPages = Enumerable.Range(1, totalPages).ToList();
+}
 
 <div class="row pb-3">
-	@foreach (var productApi in Model)
+	<div class="col-12">
+		<div class="row">
+	@foreach (var productApi in Model.Items)
 	{
 		<div class="col-lg-3 col-md-6">
 			<div class="row p-2">
@@ -49,6 +59,44 @@
 			</div>
 		</div>
 	}
+	</div>
+
+	<form id="paginationForm" method="get" action="@Url.Action("Index")" hidden>
+		<div class="input-group">
+			<input type="number" name="index" id="pageIndex" class="form-control" placeholder="Page Index" value="0">
+			<input type="number" name="size" id="pageSize" class="form-control" placeholder="Page Size" value="5">
+		</div>
+	</form>
+
+	<nav aria-label="Page navigation">
+		<ul class="pagination">
+			<li class="page-item disabled">
+					<span class="page-link">Page @pageIndex of @numberOfPages.Count</span>
+			</li>
+			@* <li class="page-item">
+				<a class="page-link" href="#" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li> *@
+				@foreach (var pageItem in numberOfPages)
+				{
+					if (pageItem == pageIndex)
+					{
+						<li class="page-item active"><a class="page-link" href="#" onclick="changePageIndex(@pageItem, @Model.PageSize)">@pageItem</a></li>
+					}
+					else{
+						<li class="page-item"><a class="page-link" href="#" onclick="changePageIndex(@pageItem, @Model.PageSize)">@pageItem</a></li>
+					}
+				}
+
+			@* <li class="page-item">
+				<a class="page-link" href="#" aria-label="Next">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li> *@
+		</ul>
+	</nav>
+	</div>
 </div>
 <style>
 	
@@ -59,3 +107,10 @@
 		border-radius: 10px; 
 	}
 </style>
+<script>
+	function changePageIndex(pageIndex, pageSize) {
+		document.getElementById('pageIndex').value = pageIndex - 1;
+		document.getElementById('pageSize').value = pageSize;
+		document.getElementById('paginationForm').submit();
+	}
+</script>

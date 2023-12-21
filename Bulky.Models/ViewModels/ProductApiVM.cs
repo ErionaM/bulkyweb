@@ -11,4 +11,5 @@ namespace Bulky.Models.ViewModels
 		public Product Product { get; set; }
 		public double RatingAverage { get; set; }
 	}
+
 }

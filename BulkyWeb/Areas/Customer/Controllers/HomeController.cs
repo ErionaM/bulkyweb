@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
@@ -23,24 +24,37 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			_unitOfWork = unitOfWork;
 		}
 
-		public IActionResult Index()
+		public IActionResult Index(int index = 0, int size = 2)
 		{
-			
+			IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
+			var totalProductListItems = productList.Count();
+
+			int itemsToSkip = Math.Min(index * size, totalProductListItems);
+
+			productList = productList.Skip(itemsToSkip).Take(size);
 
 
 			List<ProductApiVM> productApis = new List<ProductApiVM>();
-			IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
 
 			foreach (var product in productList)
 			{
 				productApis.Add(new ProductApiVM
 				{
 					Product = product,
-					RatingAverage = GetRatingAverage(product.Title!)
+					//RatingAverage = GetRatingAverage(product.Title!)
+					RatingAverage = 0
 				});
 			}
+			
+			var pagination = new PaginationVM<ProductApiVM>
+			{
+				Items = productApis,
+				PageIndex = index,
+				PageSize = size,
+				TotalItems = totalProductListItems
+			};
 
-			return View(productApis);
+			return View(pagination);
 		}
 
 		private double GetRatingAverage(string productTitle)
