@@ -6,6 +6,10 @@ $(document).ready(function () {
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         "ajax": { url: '/admin/product/getall' },
+        "lengthMenu": [5, 10, 25, 50],  // Set the page length options
+        "pageLength": 10,  // Set the default page length
+        //processing: true,
+        //serverSide: true,
         "columns": [
             { data: 'title', "width": "25%" },
             { data: 'isbn', "width": "15%" },

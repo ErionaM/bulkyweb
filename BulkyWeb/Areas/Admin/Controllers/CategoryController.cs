@@ -4,6 +4,7 @@ using Bulky.DataAccess.Data;
 using Bulky.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Bulky.Utillity;
+using System.Drawing.Text;
 
 namespace BulkyWeb.Areas.Admin.Controllers
 {
@@ -20,10 +21,14 @@ namespace BulkyWeb.Areas.Admin.Controllers
 		}
 
 
+		private const int ItemsPerPage = 10;
 		public IActionResult Index()
 		{
-            IEnumerable<Category> objCategoryList = _unitOfWork.Category.GetAll(); 
-			return View(objCategoryList);
+        IEnumerable<Category> objCategoryList = _unitOfWork.Category.GetAll(); 
+   return View(objCategoryList);
+		
+
+
 		}
 
 

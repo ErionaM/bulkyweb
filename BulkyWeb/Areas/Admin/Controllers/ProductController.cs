@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace BulkyWeb.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-	[Authorize(Roles=SD.Role_Admin)]
+	[Authorize(Roles = SD.Role_Admin)]
 	public class ProductController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 			_webHostEnvironment = webHostEnvironment;
 		}
 
-		public IActionResult Index()
+		public IActionResult Index()//int pageIndex = 1, int pageSize = 10)
 		{
 			List<Product> objProductList = _unitOfWork.Product.GetAll().ToList();
 			IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
@@ -31,6 +31,10 @@ namespace BulkyWeb.Areas.Admin.Controllers
 			});
 
 			return View(objProductList);
+			//if(pageSize== 1)
+			//{
+
+			//}
 
 
 		}
@@ -56,10 +60,10 @@ namespace BulkyWeb.Areas.Admin.Controllers
 			}
 			else
 			{
-                //update
-                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+				//update
+				productVM.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
 
-                return View(productVM);
+				return View(productVM);
 			}
 
 
@@ -77,9 +81,9 @@ namespace BulkyWeb.Areas.Admin.Controllers
 				string wwwRootPath = _webHostEnvironment.WebRootPath;
 				if (file != null)
 				{
-					string fileName=Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+					string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 					string productPath = Path.Combine(wwwRootPath, @"images\product");
-					if(!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+					if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
 					{
 						//Delete the old image 
 						var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
@@ -90,7 +94,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 						}
 					}
 
-					using (var fileStream = new FileStream(Path.Combine(productPath, fileName),FileMode.Create))
+					using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
 					{
 						file.CopyTo(fileStream);
 					}
@@ -126,13 +130,14 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
 		}
 
-		
+
 
 		#region API CALLS
 		[HttpGet]
 		public IActionResult GetAll()
 		{
-			List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties:"Category").ToList();
+			List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+
 			return Json(new { data = objProductList });
 		}
 
@@ -141,7 +146,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 		public IActionResult Delete(int? id)
 		{
 			var productToBeDeleted = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-			if( productToBeDeleted == null)
+			if (productToBeDeleted == null)
 			{
 				return Json(new { success = false, message = "Error while deleting" });
 			}
@@ -161,7 +166,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
 		}
 
-		
+
 		#endregion
 
 

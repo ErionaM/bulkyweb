@@ -30,6 +30,8 @@ function loadDataTable(status) {
         "ajax": {
             "url": "/Admin/Order/GetAll?status=" + status
         },
+        processing: true,
+        serverSide: true,
         "columns": [
             { "data": "id", "width": "5%" },
             { "data": "name", "width": "25%" },
