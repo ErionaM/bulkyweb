@@ -26,12 +26,12 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 		public IActionResult Index(int index = 0, int size = 2)
 		{
-			IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
-			var totalProductListItems = productList.Count();
+			IEnumerable<Product> productList = _unitOfWork.Product.GetAll(
+				includeProperties: "Category",
+				index: index, 
+				size: size);
 
-			int itemsToSkip = Math.Min(index * size, totalProductListItems);
-
-			productList = productList.Skip(itemsToSkip).Take(size);
+			var totalProductListItems = _unitOfWork.Product.CountItems();
 
 
 			List<ProductApiVM> productApis = new List<ProductApiVM>();

@@ -27,7 +27,11 @@ namespace Bulky.DataAccess.Repository
 			dbSet.Add(entity);
 		}
 		//includeProp - "Category,CoverType"
-		public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter= null, string? includeProperties = null)
+		public IEnumerable<T> GetAll(
+			Expression<Func<T, bool>>? filter= null, 
+			string? includeProperties = null,
+			int? index = null,
+			int? size = null)
 		{
 			IQueryable<T> query = dbSet;
 			if (filter != null)
@@ -41,7 +45,24 @@ namespace Bulky.DataAccess.Repository
 					query = query.Include(includeProp);
 				}
 			}
+
+			if(index.HasValue && size.HasValue)
+			{
+				var totalProductListItems = query.Count();
+
+				int itemsToSkip = Math.Min(index.Value * size.Value, totalProductListItems);
+
+				query = query.Skip(itemsToSkip).Take(size.Value);
+			}
+
 			return query.ToList();
+		}
+
+		public int CountItems()
+		{
+			IQueryable<T> query = dbSet;
+
+			return query.Count();
 		}
 
 
